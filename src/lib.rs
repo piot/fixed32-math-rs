@@ -2,7 +2,7 @@
  *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/fixed32-math-rs
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------------------*/
-use std::ops::{Add, AddAssign, Div, Mul, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, Sub, Neg};
 
 use fixed32::Fp;
 
@@ -154,6 +154,16 @@ impl Mul<Fp> for Vector {
     }
 }
 
+impl Neg for Vector {
+    type Output = Vector;
+
+    fn neg(self) -> Self {
+        Self {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
+}
 
 
 
@@ -166,6 +176,13 @@ pub struct Rect {
 impl Rect {
     pub fn new(pos: Vector, size: Vector) -> Self {
         Self { pos, size }
+    }
+
+    pub fn from_int(x: i16, y: i16, width: i16, height: i16) -> Self {
+        Self {
+            pos: Vector::new_from_int(x, y),
+            size: Vector::new_from_int(width, height),
+        }
     }
 }
 
