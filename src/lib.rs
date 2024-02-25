@@ -32,7 +32,7 @@ impl Vector {
     }
 
     pub fn sqr_len(&self) -> Fp {
-        Fp(self.x.0 / 1000 * self.x.0 + self.y.0 / 1000 * self.y.0)
+        self.x * self.x + self.y * self.y
     }
 }
 
