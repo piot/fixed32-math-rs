@@ -17,6 +17,35 @@ impl Vector {
         Self { x, y }
     }
 
+    pub fn left() -> Self {
+        Self {
+            x: Fp::neg_one(),
+            y: Fp::zero(),
+        }
+    }
+
+    pub fn right() -> Self {
+        Self {
+            x: Fp::one(),
+            y: Fp::zero(),
+        }
+    }
+
+    pub fn up() -> Self {
+        Self {
+            x: Fp::zero(),
+            y: Fp::one(),
+        }
+    }
+
+
+    pub fn down() -> Self {
+        Self {
+            x: Fp::zero(),
+            y: Fp::neg_one(),
+        }
+    }
+
     pub fn new_from_int(x: i16, y: i16) -> Self {
         Self {
             x: Fp::from_int(x),
