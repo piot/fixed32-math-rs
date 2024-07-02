@@ -48,15 +48,15 @@ impl Vector {
 
     pub fn new_from_int(x: i16, y: i16) -> Self {
         Self {
-            x: Fp::from_int(x),
-            y: Fp::from_int(y),
+            x: Fp::from(x),
+            y: Fp::from(y),
         }
     }
 
     pub fn from_float(x: f32, y: f32) -> Self {
         Self {
-            x: Fp::from_float(x),
-            y: Fp::from_float(y),
+            x: Fp::from(x),
+            y: Fp::from(y),
         }
     }
 
@@ -144,8 +144,8 @@ impl Div<i16> for Vector {
 
     fn div(self, rhs: i16) -> Self::Output {
         Vector {
-            x: self.x / Fp::from_int(rhs),
-            y: self.y / Fp::from_int(rhs),
+            x: self.x / Fp::from(rhs),
+            y: self.y / Fp::from(rhs),
         }
     }
 }
@@ -166,8 +166,8 @@ impl Mul<i16> for Vector {
 
     fn mul(self, rhs: i16) -> Self::Output {
         Vector {
-            x: self.x * Fp::from_int(rhs),
-            y: self.y * Fp::from_int(rhs),
+            x: self.x * Fp::from(rhs),
+            y: self.y * Fp::from(rhs),
         }
     }
 }
