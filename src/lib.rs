@@ -2,11 +2,18 @@
  *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/fixed32-math-rs
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------------------*/
+use core::fmt;
+/*----------------------------------------------------------------------------------------------------------
+ *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/fixed32-math-rs
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *--------------------------------------------------------------------------------------------------------*/
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
 use fixed32::Fp;
 
-#[derive(Debug, Default, PartialEq, Clone, Copy)]
+mod test;
+
+#[derive(Default, PartialEq, Clone, Copy)]
 pub struct Vector {
     pub x: Fp,
     pub y: Fp,
@@ -45,22 +52,20 @@ impl Vector {
         }
     }
 
-    pub fn new_from_int(x: i16, y: i16) -> Self {
-        Self {
-            x: Fp::from(x),
-            y: Fp::from(y),
-        }
-    }
-
-    pub fn from_float(x: f32, y: f32) -> Self {
-        Self {
-            x: Fp::from(x),
-            y: Fp::from(y),
-        }
-    }
-
     pub fn sqr_len(&self) -> Fp {
         self.x * self.x + self.y * self.y
+    }
+}
+
+impl fmt::Debug for Vector {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "vec:{},{}", self.x, self.y)
+    }
+}
+
+impl fmt::Display for Vector {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "vec:{},{}", self.x, self.y)
     }
 }
 
@@ -231,11 +236,13 @@ impl Rect {
     pub fn new(pos: Vector, size: Vector) -> Self {
         Self { pos, size }
     }
+}
 
-    pub fn from_int(x: i16, y: i16, width: i16, height: i16) -> Self {
+impl From<(i16, i16, i16, i16)> for Rect {
+    fn from(values: (i16, i16, i16, i16)) -> Self {
         Self {
-            pos: Vector::new_from_int(x, y),
-            size: Vector::new_from_int(width, height),
+            pos: Vector::from((values.0, values.1)),
+            size: Vector::from((values.2, values.3)),
         }
     }
 }
