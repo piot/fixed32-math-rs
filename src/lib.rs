@@ -236,6 +236,13 @@ impl Rect {
     pub fn new(pos: Vector, size: Vector) -> Self {
         Self { pos, size }
     }
+
+    pub fn with_offset(self, offset: Vector) -> Self {
+        Self {
+            pos: self.pos + offset,
+            size: self.size,
+        }
+    }
 }
 
 impl From<(i16, i16, i16, i16)> for Rect {
