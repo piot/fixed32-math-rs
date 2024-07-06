@@ -2,7 +2,7 @@
  *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/fixed32-math-rs
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------------------*/
-use std::ops::{Add, AddAssign, Div, Mul, Sub, Neg};
+use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
 use fixed32::Fp;
 
@@ -38,7 +38,6 @@ impl Vector {
         }
     }
 
-
     pub fn down() -> Self {
         Self {
             x: Fp::zero(),
@@ -62,6 +61,24 @@ impl Vector {
 
     pub fn sqr_len(&self) -> Fp {
         self.x * self.x + self.y * self.y
+    }
+}
+
+impl From<(i16, i16)> for Vector {
+    fn from(values: (i16, i16)) -> Self {
+        Self {
+            x: Fp::from(values.0),
+            y: Fp::from(values.1),
+        }
+    }
+}
+
+impl From<(f32, f32)> for Vector {
+    fn from(values: (f32, f32)) -> Self {
+        Self {
+            x: Fp::from(values.0),
+            y: Fp::from(values.1),
+        }
     }
 }
 
@@ -116,6 +133,16 @@ impl Mul<Vector> for Fp {
     }
 }
 
+impl Mul<Fp> for Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: Fp) -> Self::Output {
+        Vector {
+            x: self.x * rhs,
+            y: self.y * rhs,
+        }
+    }
+}
 
 impl Div<Vector> for Vector {
     type Output = Vector;
@@ -135,6 +162,17 @@ impl Div<Vector> for i16 {
         Vector {
             x: (self / rhs.x),
             y: (self / rhs.y),
+        }
+    }
+}
+
+impl Div<Fp> for Vector {
+    type Output = Vector;
+
+    fn div(self, rhs: Fp) -> Self::Output {
+        Vector {
+            x: self.x / rhs,
+            y: self.y / rhs,
         }
     }
 }
@@ -172,17 +210,6 @@ impl Mul<i16> for Vector {
     }
 }
 
-impl Mul<Fp> for Vector {
-    type Output = Vector;
-
-    fn mul(self, rhs: Fp) -> Self::Output {
-        Vector {
-            x: self.x * rhs,
-            y: self.y * rhs,
-        }
-    }
-}
-
 impl Neg for Vector {
     type Output = Vector;
 
@@ -193,8 +220,6 @@ impl Neg for Vector {
         }
     }
 }
-
-
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Rect {
@@ -214,6 +239,3 @@ impl Rect {
         }
     }
 }
-
-
-
