@@ -18,6 +18,8 @@ use fixed32::Fp;
 
 mod test;
 
+/// Represents a vector in a 2D space.
+///
 #[derive(Default, PartialEq, Clone, Copy)]
 pub struct Vector {
     pub x: Fp,
@@ -403,7 +405,7 @@ impl Neg for Vector {
 ///
 /// The `Rect` struct is defined by its position (`pos`) and size (`size`), both of which are
 /// represented as [`Vector`] instances. The position indicates the coordinates of the rectangle's
-/// top-left corner, and the size indicates the width and height of the rectangle.
+/// bottom-left corner, and the size indicates the width and height of the rectangle.
 ///
 /// # Examples
 ///
