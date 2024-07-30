@@ -3,12 +3,7 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------------------*/
 use core::fmt;
-/*----------------------------------------------------------------------------------------------------------
- *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/fixed32-math-rs
- *  Licensed under the MIT License. See LICENSE in the project root for license information.
- *--------------------------------------------------------------------------------------------------------*/
-use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
-
+use core::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 use fixed32::Fp;
 
 mod test;
@@ -24,6 +19,7 @@ impl Vector {
         Self { x, y }
     }
 
+    #[inline]
     pub fn left() -> Self {
         Self {
             x: Fp::neg_one(),
@@ -31,6 +27,7 @@ impl Vector {
         }
     }
 
+    #[inline]
     pub fn right() -> Self {
         Self {
             x: Fp::one(),
@@ -38,6 +35,7 @@ impl Vector {
         }
     }
 
+    #[inline]
     pub fn up() -> Self {
         Self {
             x: Fp::zero(),
@@ -45,6 +43,7 @@ impl Vector {
         }
     }
 
+    #[inline]
     pub fn down() -> Self {
         Self {
             x: Fp::zero(),
@@ -54,6 +53,60 @@ impl Vector {
 
     pub fn sqr_len(&self) -> Fp {
         self.x * self.x + self.y * self.y
+    }
+
+    /// Returns the length of the vector.
+    pub fn len(&self) -> Fp {
+        self.sqr_len().sqrt()
+    }
+
+    /// Returns a normalized vector with length 1. Returns `None` if the vector is zero-length.
+    pub fn normalize(&self) -> Option<Self> {
+        let length = self.len();
+        if length.is_zero() {
+            None
+        } else {
+            Some(Self {
+                x: self.x / length,
+                y: self.y / length,
+            })
+        }
+    }
+
+    /// Computes the dot product of this vector with another.
+    pub fn dot(&self, other: &Self) -> Fp {
+        self.x * other.x + self.y * other.y
+    }
+
+    /// Computes the magnitude of the cross product in 2D (which is a scalar value).
+    pub fn cross(&self, other: &Self) -> Fp {
+        self.x * other.y - self.y * other.x
+    }
+
+    /// Scales the vector by another vector component-wise.
+    pub fn scale(&self, factor: &Self) -> Self {
+        Self {
+            x: self.x * factor.x,
+            y: self.y * factor.y,
+        }
+    }
+
+    /// Rotates the vector by the given angle in radians.
+    pub fn rotate(&self, angle: Fp) -> Self {
+        let cos_angle = angle.cos();
+        let sin_angle = angle.sin();
+        Self {
+            x: self.x * cos_angle - self.y * sin_angle,
+            y: self.x * sin_angle + self.y * cos_angle,
+        }
+    }
+
+    /// Returns the absolute value of each component of the vector.
+    pub fn abs(&self) -> Self {
+        Self {
+            x: self.x.abs(),
+            y: self.y.abs(),
+        }
     }
 }
 
@@ -242,6 +295,89 @@ impl Rect {
             pos: self.pos + offset,
             size: self.size,
         }
+    }
+
+    /// Calculates the area of the rectangle.
+    pub fn area(&self) -> Fp {
+        self.size.x * self.size.y
+    }
+
+    /// Calculates the perimeter of the rectangle.
+    pub fn perimeter(&self) -> Fp {
+        2 * (self.size.x + self.size.y)
+    }
+
+    /// Calculates the intersection of two rectangles.
+    pub fn intersection(&self, other: &Self) -> Option<Self> {
+        let x_overlap = Fp::max(self.pos.x, other.pos.x)
+            ..Fp::min(self.pos.x + self.size.x, other.pos.x + other.size.x);
+        let y_overlap = Fp::max(self.pos.y, other.pos.y)
+            ..Fp::min(self.pos.y + self.size.y, other.pos.y + other.size.y);
+
+        if x_overlap.is_empty() || y_overlap.is_empty() {
+            None
+        } else {
+            Some(Self {
+                pos: Vector {
+                    x: x_overlap.start,
+                    y: y_overlap.start,
+                },
+                size: Vector {
+                    x: x_overlap.end - x_overlap.start,
+                    y: y_overlap.end - y_overlap.start,
+                },
+            })
+        }
+    }
+
+    /// Calculates the union of two rectangles.
+    pub fn union(&self, other: &Self) -> Self {
+        let x_min = Fp::min(self.pos.x, other.pos.x);
+        let y_min = Fp::min(self.pos.y, other.pos.y);
+        let x_max = Fp::max(self.pos.x + self.size.x, other.pos.x + other.size.x);
+        let y_max = Fp::max(self.pos.y + self.size.y, other.pos.y + other.size.y);
+
+        Self {
+            pos: Vector { x: x_min, y: y_min },
+            size: Vector {
+                x: x_max - x_min,
+                y: y_max - y_min,
+            },
+        }
+    }
+
+    /// Checks if a point is inside the rectangle.
+    pub fn contains_point(&self, point: &Vector) -> bool {
+        point.x >= self.pos.x
+            && point.x < self.pos.x + self.size.x
+            && point.y >= self.pos.y
+            && point.y < self.pos.y + self.size.y
+    }
+
+    /// Checks if another rectangle is completely inside this rectangle.
+    pub fn contains_rect(&self, other: &Self) -> bool {
+        self.contains_point(&other.pos) && self.contains_point(&(other.pos + other.size))
+    }
+
+    /// Expands the rectangle by a given offset.
+    pub fn expanded(&self, offset: Vector) -> Self {
+        Self {
+            pos: self.pos - offset,
+            size: self.size + offset * Fp::from(2.0),
+        }
+    }
+
+    /// Contracts the rectangle by a given offset.
+    pub fn contracted(&self, offset: Vector) -> Self {
+        Self {
+            pos: self.pos + offset,
+            size: self.size - offset * Fp::from(2.0),
+        }
+    }
+
+    /// Calculates the aspect ratio of the rectangle.
+    pub fn aspect_ratio(&self) -> Fp {
+        self.size.x / self.size.y
     }
 }
 
