@@ -2,8 +2,18 @@
  *  Copyright (c) Peter Bjorklund. All rights reserved. https://github.com/piot/fixed32-math-rs
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------------------*/
+
+/*!
+# Vector and Rect Library
+
+This Rust crate that provides efficient 2D vector and rectangle operations using fixed-point arithmetic.
+Designed for applications where fixed precision is preferred, this crate is ideal for scenarios such as graphics programming,
+game development, and embedded systems where deterministic results are crucial.
+*/
+
 use core::fmt;
 use core::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
+
 use fixed32::Fp;
 
 mod test;
@@ -15,10 +25,47 @@ pub struct Vector {
 }
 
 impl Vector {
+    /// Creates a new `Vector` with the specified `x` and `y` components.
+    ///
+    /// # Parameters
+    /// - `x`: The x-coordinate of the vector.
+    /// - `y`: The y-coordinate of the vector.
+    ///
+    /// # Returns
+    /// A `Vector` instance with the given `x` and `y` components.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::Vector;
+    ///
+    /// let v = Vector::new(Fp::from(2), Fp::from(3));
+    /// assert_eq!(v.x, Fp::from(2));
+    /// assert_eq!(v.y, Fp::from(3));
+    /// ```
     pub fn new(x: Fp, y: Fp) -> Self {
         Self { x, y }
     }
 
+    /// Returns a `Vector` pointing to the left (negative x-axis direction).
+    ///
+    /// This is a convenience method to create a vector that represents a direction
+    /// to the left in 2D space.
+    ///
+    /// # Returns
+    /// A `Vector` instance with `x` set to `-1` and `y` set to `0`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::Vector;
+    ///
+    /// let left = Vector::left();
+    /// assert_eq!(left.x, Fp::neg_one());
+    /// assert_eq!(left.y, Fp::zero());
+    /// ```
     #[inline]
     pub fn left() -> Self {
         Self {
@@ -27,6 +74,24 @@ impl Vector {
         }
     }
 
+    /// Returns a `Vector` pointing to the right (positive x-axis direction).
+    ///
+    /// This is a convenience method to create a vector that represents a direction
+    /// to the right in 2D space.
+    ///
+    /// # Returns
+    /// A `Vector` instance with `x` set to `1` and `y` set to `0`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::Vector;
+    ///
+    /// let right = Vector::right();
+    /// assert_eq!(right.x, Fp::one());
+    /// assert_eq!(right.y, Fp::zero());
+    /// ```
     #[inline]
     pub fn right() -> Self {
         Self {
@@ -35,6 +100,24 @@ impl Vector {
         }
     }
 
+    /// Returns a `Vector` pointing upwards (positive y-axis direction).
+    ///
+    /// This is a convenience method to create a vector that represents a direction
+    /// upwards in 2D space.
+    ///
+    /// # Returns
+    /// A `Vector` instance with `x` set to `0` and `y` set to `1`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::Vector;
+    ///
+    /// let up = Vector::up();
+    /// assert_eq!(up.x, Fp::zero());
+    /// assert_eq!(up.y, Fp::one());
+    /// ```
     #[inline]
     pub fn up() -> Self {
         Self {
@@ -43,6 +126,24 @@ impl Vector {
         }
     }
 
+    /// Returns a `Vector` pointing downwards (negative y-axis direction).
+    ///
+    /// This is a convenience method to create a vector that represents a direction
+    /// downwards in 2D space.
+    ///
+    /// # Returns
+    /// A `Vector` instance with `x` set to `0` and `y` set to `-1`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::Vector;
+    ///
+    /// let down = Vector::down();
+    /// assert_eq!(down.x, Fp::zero());
+    /// assert_eq!(down.y, Fp::neg_one());
+    /// ```
     #[inline]
     pub fn down() -> Self {
         Self {
@@ -51,6 +152,25 @@ impl Vector {
         }
     }
 
+    /// Computes the squared length (magnitude) of the vector.
+    ///
+    /// This method calculates the squared length of the vector, which is the sum of the
+    /// squares of its `x` and `y` components. It is often used for performance reasons when
+    /// the actual length is not needed, as computing the square root can be costly.
+    ///
+    /// # Returns
+    /// The squared length of the vector as an [`Fp`] value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::Vector;
+    ///
+    /// let v = Vector::new(Fp::from(3), Fp::from(4));
+    /// let sqr_len = v.sqr_len();
+    /// assert_eq!(sqr_len, Fp::from(25));
+    /// ```
     pub fn sqr_len(&self) -> Fp {
         self.x * self.x + self.y * self.y
     }
@@ -279,6 +399,35 @@ impl Neg for Vector {
     }
 }
 
+/// Represents a rectangle in a 2D space.
+///
+/// The `Rect` struct is defined by its position (`pos`) and size (`size`), both of which are
+/// represented as [`Vector`] instances. The position indicates the coordinates of the rectangle's
+/// top-left corner, and the size indicates the width and height of the rectangle.
+///
+/// # Examples
+///
+/// Creating a new rectangle:
+/// ```
+/// use fixed32::Fp;
+/// use fixed32_math::{Vector, Rect};
+///
+/// let pos = Vector::new(Fp::from(1), Fp::from(2));
+/// let size = Vector::new(Fp::from(3), Fp::from(4));
+/// let rect = Rect::new(pos, size);
+/// ```
+///
+/// Accessing the position and size:
+/// ```
+/// use fixed32::Fp;
+/// use fixed32_math::{Vector, Rect};
+///
+/// let pos = Vector::new(Fp::from(1), Fp::from(2));
+/// let size = Vector::new(Fp::from(3), Fp::from(4));
+/// let rect = Rect::new(pos, size);
+/// assert_eq!(rect.pos.x, Fp::from(1));
+/// assert_eq!(rect.size.y, Fp::from(4));
+/// ```
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Rect {
     pub pos: Vector,
@@ -286,11 +435,57 @@ pub struct Rect {
 }
 
 impl Rect {
+    /// Creates a new `Rect` with the specified position and size.
+    ///
+    /// # Parameters
+    /// - `pos`: The position of the rectangle's top-left corner as a [`Vector`].
+    /// - `size`: The size of the rectangle, including its width and height, as a [`Vector`].
+    ///
+    /// # Returns
+    /// A `Rect` instance with the given position and size.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::{Vector, Rect};
+    ///
+    /// let pos = Vector::new(Fp::from(1), Fp::from(2));
+    /// let size = Vector::new(Fp::from(3), Fp::from(4));
+    /// let rect = Rect::new(pos, size);
+    /// assert_eq!(rect.pos, pos);
+    /// assert_eq!(rect.size, size);
+    /// ```
     pub fn new(pos: Vector, size: Vector) -> Self {
         Self { pos, size }
     }
 
-    pub fn with_offset(self, offset: Vector) -> Self {
+    /// Returns a new `Rect` with its position translated by the given vector.
+    ///
+    /// This method is useful for moving the rectangle while keeping its size unchanged.
+    ///
+    /// # Parameters
+    /// - `offset`: A vector indicating how much to translate the rectangle's position.
+    ///
+    /// # Returns
+    /// A new `Rect` with the position translated by the given vector. The size remains unchanged.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use fixed32::Fp;
+    /// use fixed32_math::{Rect, Vector};
+    ///
+    /// let pos = Vector::new(Fp::from(1), Fp::from(2));
+    /// let size = Vector::new(Fp::from(3), Fp::from(4));
+    /// let rect = Rect::new(pos, size);
+    /// let offset = Vector::new(Fp::from(1), Fp::from(-1));
+    /// let translated_rect = rect.move_by(offset);
+    /// assert_eq!(translated_rect.pos.x, Fp::from(2));
+    /// assert_eq!(translated_rect.pos.y, Fp::from(1));
+    /// assert_eq!(translated_rect.size, size);
+    /// ```
+    pub fn move_by(self, offset: Vector) -> Self {
         Self {
             pos: self.pos + offset,
             size: self.size,
@@ -383,6 +578,15 @@ impl Rect {
 
 impl From<(i16, i16, i16, i16)> for Rect {
     fn from(values: (i16, i16, i16, i16)) -> Self {
+        Self {
+            pos: Vector::from((values.0, values.1)),
+            size: Vector::from((values.2, values.3)),
+        }
+    }
+}
+
+impl From<(f32, f32, f32, f32)> for Rect {
+    fn from(values: (f32, f32, f32, f32)) -> Self {
         Self {
             pos: Vector::from((values.0, values.1)),
             size: Vector::from((values.2, values.3)),

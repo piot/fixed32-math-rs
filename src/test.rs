@@ -30,8 +30,8 @@ mod tests {
     }
 
     #[test]
-    fn rect_offset() {
-        let result = Rect::from((10, 33, 20, 30)).with_offset(Vector::from((18, -2)));
+    fn rect_move() {
+        let result = Rect::from((10, 33, 20, 30)).move_by(Vector::from((18, -2)));
         assert_eq!(result.pos, Vector::from((28, 31)));
         assert_eq!(result.size, Vector::from((20, 30)));
     }
