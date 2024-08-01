@@ -8,7 +8,7 @@ game development, and embedded systems where deterministic results are crucial.
 
 ### Vector
 
-The `Vector` struct represents a 2D vector and supports various operations including addition, subtraction, scaling, 
+The `Vector` struct represents a 2D vector and supports various operations including addition, subtraction, scaling,
 normalization, and more. The vector components use fixed-point arithmetic via the `fixed32` crate.
 
 #### Example Usage
@@ -31,7 +31,7 @@ let rotated = v1.rotate(Fp::from(90).to_radians());
 ### Rect
 
 The `Rect` struct represents an axis-aligned rectangle defined by its lower left position and size.
-It supports operations such as intersection, union, expansion, and contraction, as well as checking 
+It supports operations such as intersection, union, expansion, and contraction, as well as checking
 if a point or another rectangle is contained within it.
 
 #### Example Usage
@@ -65,7 +65,7 @@ let rect2 = Rect::from((1.24, 2.34, 3.98, 4.01));
 let vector = Vector::from((2, 2));
 ```
 
-This feature allows you to create `Rect` and `Vector` instances in a more concise manner without needing to 
+This feature allows you to create `Rect` and `Vector` instances in a more concise manner without needing to
 manually convert integer and float values to fixed-point numbers (`fixed32::Fp`).
 
 ## Features
@@ -80,7 +80,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-fixed32_math = "0.0.10"
+fixed32_math = "0.0.14"
 ```
 
 ## Documentation
