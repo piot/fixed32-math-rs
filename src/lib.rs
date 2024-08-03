@@ -430,7 +430,7 @@ impl Neg for Vector {
 /// assert_eq!(rect.pos.x, Fp::from(1));
 /// assert_eq!(rect.size.y, Fp::from(4));
 /// ```
-#[derive(Debug, Default, PartialEq, Clone, Copy)]
+#[derive(Default, PartialEq, Clone, Copy)]
 pub struct Rect {
     pub pos: Vector,
     pub size: Vector,
@@ -458,8 +458,29 @@ impl Rect {
     /// assert_eq!(rect.pos, pos);
     /// assert_eq!(rect.size, size);
     /// ```
-    pub fn new(pos: Vector, size: Vector) -> Self {
+    #[inline]
+    pub const fn new(pos: Vector, size: Vector) -> Self {
         Self { pos, size }
+    }
+
+    #[inline(always)]
+    pub fn top(self) -> Fp {
+        self.pos.y + self.size.y
+    }
+
+    #[inline(always)]
+    pub const fn bottom(self) -> Fp {
+        self.pos.y
+    }
+
+    #[inline(always)]
+    pub const fn left(self) -> Fp {
+        self.pos.x
+    }
+
+    #[inline(always)]
+    pub fn right(self) -> Fp {
+        self.pos.x + self.size.x
     }
 
     /// Returns a new `Rect` with its position translated by the given vector.
@@ -556,6 +577,14 @@ impl Rect {
         self.contains_point(&other.pos) && self.contains_point(&(other.pos + other.size))
     }
 
+    #[inline]
+    pub fn is_overlapping(self, other: Self) -> bool {
+        !(self.right() < other.left()
+            || self.left() > other.right()
+            || self.bottom() > other.top()
+            || self.top() < other.bottom())
+    }
+
     /// Expands the rectangle by a given offset.
     pub fn expanded(&self, offset: Vector) -> Self {
         Self {
@@ -575,6 +604,26 @@ impl Rect {
     /// Calculates the aspect ratio of the rectangle.
     pub fn aspect_ratio(&self) -> Fp {
         self.size.x / self.size.y
+    }
+}
+
+impl fmt::Debug for Rect {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "rect:({:?},{:?},{:?},{:?})",
+            self.pos.x, self.pos.y, self.size.x, self.size.y
+        )
+    }
+}
+
+impl fmt::Display for Rect {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "({}, {}, {}, {})",
+            self.pos.x, self.pos.y, self.size.x, self.size.y
+        )
     }
 }
 
