@@ -80,15 +80,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-fixed32_math = "0.0.14"
-```
-
-## Documentation
-
-For more detailed documentation, including method descriptions and usage examples, refer to the generated documentation via:
-
-```sh
-cargo doc --open
+fixed32_math = "0.0.16"
 ```
 
 ## License
