@@ -1,21 +1,23 @@
 # Fixed32 Math
 
-`fixed32_math` is a Rust crate that provides efficient 2D vector and rectangle operations using fixed-point arithmetic.
-Designed for applications where fixed precision is preferred, this crate is ideal for scenarios such as graphics programming,
+`fixed32_math` is a Rust crate that provides efficient 2D vector and rectangle operations
+using fixed-point arithmetic. Designed for applications where fixed precision is preferred,
+this crate is ideal for scenarios such as graphics programming,
 game development, and embedded systems where deterministic results are crucial.
 
 ## Overview
 
 ### Vector
 
-The `Vector` struct represents a 2D vector and supports various operations including addition, subtraction, scaling,
-normalization, and more. The vector components use fixed-point arithmetic via the `fixed32` crate.
+The `Vector` struct represents a 2D vector and supports various operations including addition,
+subtraction, scaling, normalization, and more. The vector components use fixed-point arithmetic
+via the `fixed32` crate.
 
 #### Example Usage
 
 ```rust
 use fixed32::Fp;
-use your_crate_name::Vector;
+use fixed32_math::Vector;
 
 // Create vectors using the `From` trait
 let v1 = Vector::from((2, 3));  // Automatically converts (2, 3) to Vector with Fp::from
@@ -38,7 +40,7 @@ if a point or another rectangle is contained within it.
 
 ```rust
 use fixed32::Fp;
-use your_crate_name::{Vector, Rect};
+use fixed32_math::{Vector, Rect};
 
 // Create Rect instances using `From` trait
 let rect1 = Rect::from((0, 0, 10, 10));

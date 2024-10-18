@@ -16,11 +16,9 @@ use core::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
 use fixed32::Fp;
 
-mod test;
-
 /// Represents a vector in a 2D space.
 ///
-#[derive(Default, PartialEq, Clone, Copy)]
+#[derive(Default, PartialEq, Eq, Clone, Copy)]
 pub struct Vector {
     pub x: Fp,
     pub y: Fp,
@@ -46,7 +44,9 @@ impl Vector {
     /// assert_eq!(v.x, Fp::from(2));
     /// assert_eq!(v.y, Fp::from(3));
     /// ```
-    pub fn new(x: Fp, y: Fp) -> Self {
+    #[inline]
+    #[must_use]
+    pub const fn new(x: Fp, y: Fp) -> Self {
         Self { x, y }
     }
 
@@ -69,7 +69,8 @@ impl Vector {
     /// assert_eq!(left.y, Fp::zero());
     /// ```
     #[inline]
-    pub fn left() -> Self {
+    #[must_use]
+    pub const fn left() -> Self {
         Self {
             x: Fp::neg_one(),
             y: Fp::zero(),
@@ -95,7 +96,8 @@ impl Vector {
     /// assert_eq!(right.y, Fp::zero());
     /// ```
     #[inline]
-    pub fn right() -> Self {
+    #[must_use]
+    pub const fn right() -> Self {
         Self {
             x: Fp::one(),
             y: Fp::zero(),
@@ -121,7 +123,8 @@ impl Vector {
     /// assert_eq!(up.y, Fp::one());
     /// ```
     #[inline]
-    pub fn up() -> Self {
+    #[must_use]
+    pub const fn up() -> Self {
         Self {
             x: Fp::zero(),
             y: Fp::one(),
@@ -147,7 +150,8 @@ impl Vector {
     /// assert_eq!(down.y, Fp::neg_one());
     /// ```
     #[inline]
-    pub fn down() -> Self {
+    #[must_use]
+    pub const fn down() -> Self {
         Self {
             x: Fp::zero(),
             y: Fp::neg_one(),
@@ -173,16 +177,19 @@ impl Vector {
     /// let sqr_len = v.sqr_len();
     /// assert_eq!(sqr_len, Fp::from(25));
     /// ```
+    #[must_use]
     pub fn sqr_len(&self) -> Fp {
         self.x * self.x + self.y * self.y
     }
 
     /// Returns the length of the vector.
+    #[must_use]
     pub fn len(&self) -> Fp {
         self.sqr_len().sqrt()
     }
 
     /// Returns a normalized vector with length 1. Returns `None` if the vector is zero-length.
+    #[must_use]
     pub fn normalize(&self) -> Option<Self> {
         let length = self.len();
         if length.is_zero() {
@@ -196,16 +203,19 @@ impl Vector {
     }
 
     /// Computes the dot product of this vector with another.
+    #[must_use]
     pub fn dot(&self, other: &Self) -> Fp {
         self.x * other.x + self.y * other.y
     }
 
     /// Computes the magnitude of the cross product in 2D (which is a scalar value).
+    #[must_use]
     pub fn cross(&self, other: &Self) -> Fp {
         self.x * other.y - self.y * other.x
     }
 
     /// Scales the vector by another vector component-wise.
+    #[must_use]
     pub fn scale(&self, factor: &Self) -> Self {
         Self {
             x: self.x * factor.x,
@@ -214,6 +224,7 @@ impl Vector {
     }
 
     /// Rotates the vector by the given angle in radians.
+    #[must_use]
     pub fn rotate(&self, angle: Fp) -> Self {
         let cos_angle = angle.cos();
         let sin_angle = angle.sin();
@@ -224,7 +235,8 @@ impl Vector {
     }
 
     /// Returns the absolute value of each component of the vector.
-    pub fn abs(&self) -> Self {
+    #[must_use]
+    pub const fn abs(&self) -> Self {
         Self {
             x: self.x.abs(),
             y: self.y.abs(),
@@ -263,7 +275,7 @@ impl From<(f32, f32)> for Vector {
 }
 
 impl Sub for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Self {
@@ -274,7 +286,7 @@ impl Sub for Vector {
 }
 
 impl Add for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
         Self {
@@ -291,11 +303,11 @@ impl AddAssign for Vector {
     }
 }
 
-impl Mul<Vector> for Vector {
-    type Output = Vector;
+impl Mul<Self> for Vector {
+    type Output = Self;
 
-    fn mul(self, rhs: Vector) -> Self::Output {
-        Vector {
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self {
             x: self.x * rhs.x,
             y: self.y * rhs.y,
         }
@@ -314,21 +326,21 @@ impl Mul<Vector> for Fp {
 }
 
 impl Mul<Fp> for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn mul(self, rhs: Fp) -> Self::Output {
-        Vector {
+        Self {
             x: self.x * rhs,
             y: self.y * rhs,
         }
     }
 }
 
-impl Div<Vector> for Vector {
-    type Output = Vector;
+impl Div<Self> for Vector {
+    type Output = Self;
 
-    fn div(self, rhs: Vector) -> Self::Output {
-        Vector {
+    fn div(self, rhs: Self) -> Self::Output {
+        Self {
             x: self.x / rhs.x,
             y: self.y / rhs.y,
         }
@@ -347,10 +359,10 @@ impl Div<Vector> for i16 {
 }
 
 impl Div<Fp> for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn div(self, rhs: Fp) -> Self::Output {
-        Vector {
+        Self {
             x: self.x / rhs,
             y: self.y / rhs,
         }
@@ -358,10 +370,10 @@ impl Div<Fp> for Vector {
 }
 
 impl Div<i16> for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn div(self, rhs: i16) -> Self::Output {
-        Vector {
+        Self {
             x: self.x / Fp::from(rhs),
             y: self.y / Fp::from(rhs),
         }
@@ -380,10 +392,10 @@ impl Mul<Vector> for i16 {
 }
 
 impl Mul<i16> for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn mul(self, rhs: i16) -> Self::Output {
-        Vector {
+        Self {
             x: self.x * Fp::from(rhs),
             y: self.y * Fp::from(rhs),
         }
@@ -391,7 +403,7 @@ impl Mul<i16> for Vector {
 }
 
 impl Neg for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn neg(self) -> Self {
         Self {
@@ -430,7 +442,7 @@ impl Neg for Vector {
 /// assert_eq!(rect.pos.x, Fp::from(1));
 /// assert_eq!(rect.size.y, Fp::from(4));
 /// ```
-#[derive(Default, PartialEq, Clone, Copy)]
+#[derive(Default, PartialEq, Eq, Clone, Copy)]
 pub struct Rect {
     pub pos: Vector,
     pub size: Vector,
@@ -459,26 +471,31 @@ impl Rect {
     /// assert_eq!(rect.size, size);
     /// ```
     #[inline]
+    #[must_use]
     pub const fn new(pos: Vector, size: Vector) -> Self {
         Self { pos, size }
     }
 
+    #[must_use]
     #[inline(always)]
     pub fn top(self) -> Fp {
         self.pos.y + self.size.y
     }
 
     #[inline(always)]
+    #[must_use]
     pub const fn bottom(self) -> Fp {
         self.pos.y
     }
 
     #[inline(always)]
+    #[must_use]
     pub const fn left(self) -> Fp {
         self.pos.x
     }
 
     #[inline(always)]
+    #[must_use]
     pub fn right(self) -> Fp {
         self.pos.x + self.size.x
     }
@@ -508,6 +525,7 @@ impl Rect {
     /// assert_eq!(translated_rect.pos.y, Fp::from(1));
     /// assert_eq!(translated_rect.size, size);
     /// ```
+    #[must_use]
     pub fn move_by(self, offset: Vector) -> Self {
         Self {
             pos: self.pos + offset,
@@ -516,16 +534,19 @@ impl Rect {
     }
 
     /// Calculates the area of the rectangle.
+    #[must_use]
     pub fn area(&self) -> Fp {
         self.size.x * self.size.y
     }
 
     /// Calculates the perimeter of the rectangle.
+    #[must_use]
     pub fn perimeter(&self) -> Fp {
         2 * (self.size.x + self.size.y)
     }
 
     /// Calculates the intersection of two rectangles.
+    #[must_use]
     pub fn intersection(&self, other: &Self) -> Option<Self> {
         let x_overlap = Fp::max(self.pos.x, other.pos.x)
             ..Fp::min(self.pos.x + self.size.x, other.pos.x + other.size.x);
@@ -549,6 +570,7 @@ impl Rect {
     }
 
     /// Calculates the union of two rectangles.
+    #[must_use]
     pub fn union(&self, other: &Self) -> Self {
         let x_min = Fp::min(self.pos.x, other.pos.x);
         let y_min = Fp::min(self.pos.y, other.pos.y);
@@ -565,6 +587,7 @@ impl Rect {
     }
 
     /// Checks if a point is inside the rectangle.
+    #[must_use]
     pub fn contains_point(&self, point: &Vector) -> bool {
         point.x >= self.pos.x
             && point.x < self.pos.x + self.size.x
@@ -573,11 +596,13 @@ impl Rect {
     }
 
     /// Checks if another rectangle is completely inside this rectangle.
+    #[must_use]
     pub fn contains_rect(&self, other: &Self) -> bool {
         self.contains_point(&other.pos) && self.contains_point(&(other.pos + other.size))
     }
 
     #[inline]
+    #[must_use]
     pub fn is_overlapping(self, other: Self) -> bool {
         !(self.right() < other.left()
             || self.left() > other.right()
@@ -586,6 +611,7 @@ impl Rect {
     }
 
     /// Expands the rectangle by a given offset.
+    #[must_use]
     pub fn expanded(&self, offset: Vector) -> Self {
         Self {
             pos: self.pos - offset,
@@ -594,6 +620,7 @@ impl Rect {
     }
 
     /// Contracts the rectangle by a given offset.
+    #[must_use]
     pub fn contracted(&self, offset: Vector) -> Self {
         Self {
             pos: self.pos + offset,
@@ -602,6 +629,7 @@ impl Rect {
     }
 
     /// Calculates the aspect ratio of the rectangle.
+    #[must_use]
     pub fn aspect_ratio(&self) -> Fp {
         self.size.x / self.size.y
     }
